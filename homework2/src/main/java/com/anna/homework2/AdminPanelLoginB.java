@@ -7,9 +7,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 public class AdminPanelLoginB {
     public static void main(String[] arguments) throws Exception {
-        System.setProperty("webdriver.chrome.driver", "drivers\\chromedriver-2.33.exe");
-
-        WebDriver driver = new ChromeDriver();
+        WebDriver driver = getWebDriver();
 
         driver.get("http://prestashop-automation.qatestlab.com.ua/admin147ajyvk0/");
 
@@ -51,6 +49,12 @@ public class AdminPanelLoginB {
         processMenuItem(driver, By.id("subtab-AdminAdvancedParameters"));
 
         driver.quit();
+    }
+
+    private static WebDriver getWebDriver() {
+        System.setProperty("webdriver.chrome.driver", "drivers\\chromedriver-2.33.exe");
+
+        return new ChromeDriver();
     }
 
     private static void processMenuItem(WebDriver driver, By by) throws InterruptedException {
