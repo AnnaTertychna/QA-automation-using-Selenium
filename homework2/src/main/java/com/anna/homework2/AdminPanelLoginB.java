@@ -5,6 +5,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.io.File;
+
 public class AdminPanelLoginB {
     public static void main(String[] arguments) throws Exception {
         WebDriver driver = getWebDriver();
@@ -52,7 +54,8 @@ public class AdminPanelLoginB {
     }
 
     private static WebDriver getWebDriver() {
-        System.setProperty("webdriver.chrome.driver", "drivers\\chromedriver-2.33.exe");
+        System.setProperty("webdriver.chrome.driver",  new File(AdminPanelLoginB.class
+                .getResource("/chromedriver-2.33.exe").getFile()).getPath());
 
         return new ChromeDriver();
     }
