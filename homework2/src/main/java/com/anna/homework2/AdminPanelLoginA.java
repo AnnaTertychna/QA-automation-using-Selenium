@@ -38,9 +38,22 @@ public class AdminPanelLoginA {
     }
 
     private static WebDriver getWebDriver() {
+        String osDirectory = getOsDirectory();
+
         System.setProperty("webdriver.chrome.driver",  new File(AdminPanelLoginB.class
-                .getResource("/chromedriver-2.33.exe").getFile()).getPath());
+                .getResource("/" + osDirectory + "/chromedriver-2.33.exe").getFile()).getPath());
 
         return new ChromeDriver();
+    }
+
+    private static String getOsDirectory() {
+        String osName = System.getProperty("os.name");
+        String osDirectory = "";
+        if (osName.contains("Win")) {
+            osDirectory = "windows";
+        } else {
+            throw new RuntimeException(osName + " is not supported");
+        }
+        return osDirectory;
     }
 }
