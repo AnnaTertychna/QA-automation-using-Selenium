@@ -12,7 +12,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.io.File;
 
 public class Lecture3 {
-    public static void main(String[] arguments) throws Exception {
+    public static void main(String[] arguments) {
         WebDriver driver = getWebDriver();
 
         driver.get("http://prestashop-automation.qatestlab.com.ua/admin147ajyvk0/");
@@ -23,36 +23,39 @@ public class Lecture3 {
 
         newCategoryForm(driver);
 
-        createNewCategory(driver);
+        String categoryName = "New categories";
+        createNewCategory(driver, categoryName);
 
-        verifyCategoryAdded(driver);
+        verifyCategoryAdded(driver, categoryName);
 
         driver.quit();
     }
 
-    private static void verifyCategoryAdded(WebDriver driver) {
-        driver.findElement(By.name("categoryFilter_name")).sendKeys("New categories");
+    private static void verifyCategoryAdded(WebDriver driver, String categoryName) {
+        driver.findElement(By.name("categoryFilter_name")).sendKeys(categoryName);
         driver.findElement(By.id("submitFilterButtoncategory")).click();
-        waitForElement(driver, By.xpath("//td[contains(text(), 'New categories')]"));
+        waitForElement(driver, By.xpath("//td[contains(text(), '" + categoryName + "')]"));
     }
 
-    private static void createNewCategory(WebDriver driver) {
-        waitForElement(driver, By.id("name_1"));
-        driver.findElement(By.id("name_1")).sendKeys("New categories");
+    private static void createNewCategory(WebDriver driver, String categoryName) {
+        By byName = By.id("name_1");
+        waitForElement(driver, byName);
+        driver.findElement(byName).sendKeys(categoryName);
         driver.findElement(By.id("category_form_submit_btn")).click();
         waitForElement(driver, By.className("alert-success"));
     }
 
     private static void newCategoryForm(WebDriver driver) {
-        waitForElement(driver, By.id("page-header-desc-category-new_category"));
-        driver.findElement(By.id("page-header-desc-category-new_category")).click();
+        By byNewCategory = By.id("page-header-desc-category-new_category");
+        waitForElement(driver, byNewCategory);
+        driver.findElement(byNewCategory).click();
     }
 
     private static void openCategoriesPage(WebDriver driver) {
-        waitForElement(driver, By.id("subtab-AdminCatalog"));
-        WebElement catalog = driver.findElement(By.id("subtab-AdminCatalog"));
-        Actions builder = new Actions(driver);
-        builder.moveToElement(catalog).perform();
+        By byCatalog = By.id("subtab-AdminCatalog");
+        waitForElement(driver, byCatalog);
+        Actions actions = new Actions(driver);
+        actions.moveToElement(driver.findElement(byCatalog)).perform();
         By byCategories = By.id("subtab-AdminCategories");
         waitForElement(driver, byCategories);
         WebElement categories = driver.findElement(byCategories);
