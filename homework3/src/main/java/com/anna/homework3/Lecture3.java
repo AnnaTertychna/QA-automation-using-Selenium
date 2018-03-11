@@ -19,8 +19,37 @@ public class Lecture3 {
 
         login(driver);
 
-        waitForElement(driver, By.id("subtab-AdminCatalog"));
+        openCategoriesPage(driver);
 
+        newCategoryForm(driver);
+
+        createNewCategory(driver);
+
+        verifyCategoryAdded(driver);
+
+        driver.quit();
+    }
+
+    private static void verifyCategoryAdded(WebDriver driver) {
+        driver.findElement(By.name("categoryFilter_name")).sendKeys("New categories");
+        driver.findElement(By.id("submitFilterButtoncategory")).click();
+        waitForElement(driver, By.xpath("//td[contains(text(), 'New categories')]"));
+    }
+
+    private static void createNewCategory(WebDriver driver) {
+        waitForElement(driver, By.id("name_1"));
+        driver.findElement(By.id("name_1")).sendKeys("New categories");
+        driver.findElement(By.id("category_form_submit_btn")).click();
+        waitForElement(driver, By.className("alert-success"));
+    }
+
+    private static void newCategoryForm(WebDriver driver) {
+        waitForElement(driver, By.id("page-header-desc-category-new_category"));
+        driver.findElement(By.id("page-header-desc-category-new_category")).click();
+    }
+
+    private static void openCategoriesPage(WebDriver driver) {
+        waitForElement(driver, By.id("subtab-AdminCatalog"));
         WebElement catalog = driver.findElement(By.id("subtab-AdminCatalog"));
         Actions builder = new Actions(driver);
         builder.moveToElement(catalog).perform();
@@ -28,20 +57,6 @@ public class Lecture3 {
         waitForElement(driver, byCategories);
         WebElement categories = driver.findElement(byCategories);
         categories.click();
-        waitForElement(driver, By.id("page-header-desc-category-new_category"));
-        driver.findElement(By.id("page-header-desc-category-new_category")).click();
-
-        waitForElement(driver, By.id("name_1"));
-        driver.findElement(By.id("name_1")).sendKeys("New categories");
-        driver.findElement(By.id("category_form_submit_btn")).click();
-        waitForElement(driver, By.className("alert-success"));
-
-        driver.findElement(By.name("categoryFilter_name")).sendKeys("New categories");
-        driver.findElement(By.id("submitFilterButtoncategory")).click();
-        waitForElement(driver, By.xpath("//td[contains(text(), 'New categories')]"));
-
-        Thread.sleep(5000);
-        driver.quit();
     }
 
     private static void waitForElement(WebDriver driver, By by) {
