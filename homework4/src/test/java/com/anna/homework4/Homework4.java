@@ -12,6 +12,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Random;
+import java.util.UUID;
 
 public class Homework4 {
     @Test
@@ -27,6 +29,20 @@ public class Homework4 {
         waitForElement(driver, By.tagName("h2"));
 
         driver.findElement(By.id("page-header-desc-configuration-add")).click();
+
+        By productName = By.id("form_step1_name_1");
+        waitForElement(driver, productName);
+        driver.findElement(productName).sendKeys(UUID.randomUUID().toString());
+
+        driver.findElement(By.id("tab_step3")).click();
+
+        By amount = By.id("form_step3_qty_0");
+        waitForElement(driver, amount);
+        driver.findElement(amount).sendKeys(String.valueOf(new Random().nextInt(100) + 1));
+
+        driver.findElement(By.id("tab_step2")).click();
+        waitForElement(driver,By.id("form_step2_price")).sendKeys(String.valueOf(new Random().nextFloat() * 100 + 0.1));
+
 
         driver.quit();
     }
@@ -56,9 +72,10 @@ public class Homework4 {
         button.submit();
     }
 
-    private static void waitForElement(WebDriver driver, By by) {
+    private static WebElement waitForElement(WebDriver driver, By by) {
         WebDriverWait waitCatalog = new WebDriverWait(driver, 10);
         waitCatalog.until(ExpectedConditions.visibilityOfElementLocated(by));
+        return driver.findElement(by);
     }
 
     private static WebDriver getWebDriver() {
