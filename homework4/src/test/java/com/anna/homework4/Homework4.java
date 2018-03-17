@@ -15,9 +15,44 @@ import java.io.File;
 import java.util.Random;
 import java.util.UUID;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 public class Homework4 {
+
+    private final String productName = UUID.randomUUID().toString();
+    private final int amount = new Random().nextInt(100) + 1;
+    private final double price = new Random().nextFloat() * 100 + 0.1;
+
+    @Test(dependsOnMethods = "testA")
+    public void testB(){
+        WebDriver driver = getWebDriver();
+
+        driver.get("http://prestashop-automation.qatestlab.com.ua/admin147ajyvk0/");
+
+        login(driver);
+
+        openProductsPage(driver);
+
+        waitForElement(driver, By.tagName("h2"));
+
+        assertEquals(driver.findElements(By.linkText(productName)).size(), 1);
+
+        driver.findElement(By.linkText(productName)).click();
+
+        By byProductName = By.id("form_step1_name_1");
+        waitForElement(driver, byProductName);
+
+        String productNameText = driver.findElement(byProductName).getText();
+        assertEquals(productNameText, productName);
+
+        driver.findElement()
+
+        driver.quit();
+    }
+
     @Test
-    public void login(){
+    public void testA(){
         WebDriver driver = getWebDriver();
 
         driver.get("http://prestashop-automation.qatestlab.com.ua/admin147ajyvk0/");
@@ -30,18 +65,18 @@ public class Homework4 {
 
         driver.findElement(By.id("page-header-desc-configuration-add")).click();
 
-        By productName = By.id("form_step1_name_1");
-        waitForElement(driver, productName);
-        driver.findElement(productName).sendKeys(UUID.randomUUID().toString());
+        By byProductName = By.id("form_step1_name_1");
+        waitForElement(driver, byProductName);
+        driver.findElement(byProductName).sendKeys(productName);
 
         driver.findElement(By.id("tab_step3")).click();
 
-        By amount = By.id("form_step3_qty_0");
-        waitForElement(driver, amount);
-        driver.findElement(amount).sendKeys(String.valueOf(new Random().nextInt(100) + 1));
+        By byAmount = By.id("form_step3_qty_0");
+        waitForElement(driver, byAmount);
+        driver.findElement(byAmount).sendKeys(String.valueOf(amount));
 
         driver.findElement(By.id("tab_step2")).click();
-        waitForElement(driver,By.id("form_step2_price")).sendKeys(String.valueOf(new Random().nextFloat() * 100 + 0.1));
+        waitForElement(driver,By.id("form_step2_price")).sendKeys(String.valueOf(price));
 
         driver.findElement(By.className("switch-input")).click();
         waitForElement(driver,By.className("growl-message"));
