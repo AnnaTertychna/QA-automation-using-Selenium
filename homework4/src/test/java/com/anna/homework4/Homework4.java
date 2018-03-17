@@ -43,6 +43,14 @@ public class Homework4 {
         driver.findElement(By.id("tab_step2")).click();
         waitForElement(driver,By.id("form_step2_price")).sendKeys(String.valueOf(new Random().nextFloat() * 100 + 0.1));
 
+        driver.findElement(By.className("switch-input")).click();
+        waitForElement(driver,By.className("growl-message"));
+        driver.findElement(By.className("growl-close")).click();
+
+        driver.findElement (By.className("js-btn-save")).click();
+        waitForElement(driver,By.className("growl-message"));
+        driver.findElement(By.className("growl-close")).click();
+
 
         driver.quit();
     }
