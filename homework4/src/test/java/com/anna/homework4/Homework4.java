@@ -12,6 +12,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.UUID;
 
@@ -21,8 +22,9 @@ import static org.testng.Assert.assertTrue;
 public class Homework4 {
 
     private final String productName = UUID.randomUUID().toString();
-    private final int amount = new Random().nextInt(100) + 1;
-    private final double price = new Random().nextFloat() * 100 + 0.1;
+    private final int quantity = new Random().nextInt(100) + 1;
+    private final double price = Double.parseDouble(new DecimalFormat("#.##")
+            .format(new Random().nextFloat() * 100 + 0.1));
 
     @Test(dependsOnMethods = "testA")
     public void testB(){
@@ -36,17 +38,18 @@ public class Homework4 {
 
         waitForElement(driver, By.tagName("h2"));
 
+        driver.findElement(By.name("filter_column_name")).sendKeys(productName);
+        driver.findElement(By.name("products_filter_submit")).click();
+        waitForElement(driver, By.linkText(productName));
+
         assertEquals(driver.findElements(By.linkText(productName)).size(), 1);
 
-        driver.findElement(By.linkText(productName)).click();
+        String priceText = driver.findElement(By.xpath("//a[text() = '" +productName + "']/../../td[6]/a")).getText();
+        assertEquals(price, Double.parseDouble(priceText.split(" ")[0].replace(",", ".")));
 
-        By byProductName = By.id("form_step1_name_1");
-        waitForElement(driver, byProductName);
-
-        String productNameText = driver.findElement(byProductName).getText();
-        assertEquals(productNameText, productName);
-
-        driver.findElement()
+        String quantityText = driver.findElement(By.xpath("//a[text() = '" +productName + "']/../../td[contains(@class, 'product-sav-quantity')]/a"))
+                .getText();
+        assertEquals(quantity, Integer.parseInt(quantityText));
 
         driver.quit();
     }
@@ -73,10 +76,12 @@ public class Homework4 {
 
         By byAmount = By.id("form_step3_qty_0");
         waitForElement(driver, byAmount);
-        driver.findElement(byAmount).sendKeys(String.valueOf(amount));
+        driver.findElement(byAmount).sendKeys(String.valueOf(quantity));
 
         driver.findElement(By.id("tab_step2")).click();
-        waitForElement(driver,By.id("form_step2_price")).sendKeys(String.valueOf(price));
+        WebElement priceElement = waitForElement(driver, By.id("form_step2_price"));
+        priceElement.clear();
+        priceElement.sendKeys(String.valueOf(price));
 
         driver.findElement(By.className("switch-input")).click();
         waitForElement(driver,By.className("growl-message"));
@@ -85,7 +90,6 @@ public class Homework4 {
         driver.findElement (By.className("js-btn-save")).click();
         waitForElement(driver,By.className("growl-message"));
         driver.findElement(By.className("growl-close")).click();
-
 
         driver.quit();
     }
