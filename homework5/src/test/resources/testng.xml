@@ -1,0 +1,8 @@
+<suite name="Homework5">
+    <test name="Homework5">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.anna.homework5.Homework5" />
+        </classes>
+    </test>
+</suite>
