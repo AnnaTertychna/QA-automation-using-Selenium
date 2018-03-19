@@ -18,7 +18,9 @@ import java.util.List;
 import java.util.Random;
 
 import static java.lang.Integer.parseInt;
+import static java.util.UUID.randomUUID;
 import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class Homework5 {
     private WebDriver driver;
@@ -36,21 +38,57 @@ public class Homework5 {
 
     @Test
     public void testB() throws InterruptedException {
-        driver.get("http://prestashop-automation.qatestlab.com.ua/");
+        try {
+            driver.get("http://prestashop-automation.qatestlab.com.ua/");
 
-        openProductsPage();
+            openProductsPage();
 
-        WebElement product = findRandomProduct();
+            WebElement product = findRandomProduct();
 
-        String productPriceExpected = product.findElement(
-                By.xpath(".//div[@class = 'product-price-and-shipping']/span[@class = 'price']")).getText();
-        String productNameExpected = product.findElement(By.xpath(".//a")).getText();
+            String productPriceExpected = product.findElement(
+                    By.xpath(".//div[@class = 'product-price-and-shipping']/span[@class = 'price']")).getText();
+            String productNameExpected = product.findElement(By.xpath(".//a")).getText();
 
-        addToCart(product);
+            addToCart(product);
+            assertCart(productPriceExpected, productNameExpected);
+            fillName();
+            fillAddress();
+            fillDelivery();
+            fillPayment();
 
-        assertCart(productPriceExpected, productNameExpected);
+            WebElement h3 = waitForElement(By.tagName("h3"));
+            assertTrue(h3.getText().contains("ВАШ ЗАКАЗ ПОДТВЕРЖДЁН"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //Thread.sleep(300000);
+    }
 
+    private void fillPayment() {
+        waitForElement(By.xpath("//label[@for = 'payment-option-1']")).click();
+        driver.findElement(By.id("conditions_to_approve[terms-and-conditions]")).click();
+        driver.findElement(By.xpath("//div[@id = 'payment-confirmation']//button")).click();
+    }
 
+    private void fillDelivery() {
+        waitForElement(By.xpath("//button[@name = 'confirmDeliveryOption']")).click();
+    }
+
+    private void fillAddress() {
+        WebElement continueButton = waitForElement(By.xpath("//button[@name = 'confirm-addresses']"));
+        driver.findElement(By.xpath("//input[@name = 'address1']")).sendKeys("Sumska 3");
+        driver.findElement(By.xpath("//input[@name = 'postcode']")).sendKeys("91057");
+        driver.findElement(By.xpath("//input[@name = 'city']")).sendKeys("Kharkiv");
+        continueButton.click();
+    }
+
+    private void fillName() {
+        driver.findElement(By.xpath("//div[contains(@class, 'checkout')]//a")).click();
+        WebElement continueButton = waitForElement(By.xpath("//button[@name = 'continue']"));
+        driver.findElement(By.xpath("//input[@name = 'firstname']")).sendKeys("Ganna");
+        driver.findElement(By.xpath("//input[@name = 'lastname']")).sendKeys("Tertychna");
+        driver.findElement(By.xpath("//input[@name = 'email']")).sendKeys(randomUUID().toString() + "@qatestlab.com.ua");
+        continueButton.click();
     }
 
     private void assertCart(String productPriceExpected, String productNameExpected) {
@@ -70,8 +108,8 @@ public class Homework5 {
         new Actions(driver).moveToElement(quickView).perform();
         //new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(quickView));
         quickView.click();
-        waitForElement(driver, By.className("add-to-cart")).click();
-        waitForElement(driver, By.xpath("//div[@class = 'cart-content']/a")).click();
+        waitForElement(By.className("add-to-cart")).click();
+        waitForElement(By.xpath("//div[@class = 'cart-content']/a")).click();
     }
 
     private WebElement findRandomProduct() {
@@ -81,10 +119,10 @@ public class Homework5 {
 
     private void openProductsPage() {
         driver.findElement(By.className("all-product-link")).click();
-        waitForElement(driver, By.tagName("h1"));
+        waitForElement(By.tagName("h1"));
     }
 
-    private WebElement waitForElement(WebDriver driver, By by) {
+    private WebElement waitForElement(By by) {
         return new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOfElementLocated(by));
     }
 
