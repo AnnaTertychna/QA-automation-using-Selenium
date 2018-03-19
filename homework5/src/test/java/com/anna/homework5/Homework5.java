@@ -70,13 +70,22 @@ public class Homework5 {
                 By.xpath(".//div[@class = 'product-price-and-shipping']/span[@class = 'price']")).getText();
         String productNameExpected = product.findElement(By.xpath(".//a")).getText();
 
-        addToCart(product);
+        int quantityBefore = addToCart(product);
         assertCart(productPriceExpected, productNameExpected);
         fillName();
         fillAddress();
         fillDelivery();
         fillPayment();
         assertOrder(productPriceExpected, productNameExpected);
+        assertQuantity(productNameExpected, quantityBefore);
+    }
+
+    private void assertQuantity(String productNameExpected, int quantityBefore) {
+        openProductsPage();
+        driver.findElement(By.linkText(productNameExpected)).click();
+        waitForElement(By.className("add-to-cart"));
+        int quantityAfter = getQuantity();
+        assertEquals(quantityBefore - 1, quantityAfter);
     }
 
     private void assertOrder(String productPriceExpected, String productNameExpected) {
@@ -127,10 +136,18 @@ public class Homework5 {
         assertEquals(productPriceExpected, productPriceActual);
     }
 
-    private void addToCart(WebElement product) {
+    private int addToCart(WebElement product) {
         product.findElement(By.xpath(".//a")).click();
+        int quantity = getQuantity();
         waitForElement(By.className("add-to-cart")).click();
         waitForElement(By.xpath("//div[@class = 'cart-content']/a")).click();
+        return quantity;
+    }
+
+    private int getQuantity() {
+        driver.findElement(By.xpath("//a[@href = '#product-details']")).click();
+        return parseInt(waitForElement(
+                By.xpath("//div[contains(@class, 'product-quantities')]/span")).getText().split(" ")[0]);
     }
 
     private WebElement findRandomProduct() {
