@@ -38,14 +38,32 @@ public class Homework5 {
     public void testB() throws InterruptedException {
         driver.get("http://prestashop-automation.qatestlab.com.ua/");
 
-        driver.findElement(By.className("all-product-link")).click();
-        waitForElement(driver, By.tagName("h1"));
+        openProductsPage();
 
-        List<WebElement> products = driver.findElements(By.xpath("//div[@class = 'product-description']"));
-        WebElement product = products.get(new Random().nextInt(products.size()));
-        String productPriceExpected = product.findElement(By.xpath(".//div[@class = 'product-price-and-shipping']/span[@class = 'price']")).getText();
+        WebElement product = findRandomProduct();
+
+        String productPriceExpected = product.findElement(
+                By.xpath(".//div[@class = 'product-price-and-shipping']/span[@class = 'price']")).getText();
         String productNameExpected = product.findElement(By.xpath(".//a")).getText();
 
+        addToCart(product);
+
+        assertCart(productPriceExpected, productNameExpected);
+
+
+    }
+
+    private void assertCart(String productPriceExpected, String productNameExpected) {
+        String productNameActual = driver.findElement(By.xpath("//div[@class = 'product-line-info']/a")).getText();
+        String productPriceActual = driver.findElement(By.className("product-price")).getText();
+        int quantity = parseInt(driver.findElement(By.className("js-cart-line-product-quantity")).getAttribute("value"));
+
+        assertEquals(1, quantity);
+        assertEquals(productNameExpected, productNameActual);
+        assertEquals(productPriceExpected, productPriceActual);
+    }
+
+    private void addToCart(WebElement product) {
         new Actions(driver).moveToElement(product).perform();
         WebElement quickView = waitForElement(driver, product.findElement(By.xpath("..//a[@class = 'quick-view']")));
         new Actions(driver).moveToElement(quickView).perform();
@@ -54,14 +72,16 @@ public class Homework5 {
         quickView.click();
         waitForElement(driver, By.className("add-to-cart")).click();
         waitForElement(driver, By.xpath("//div[@class = 'cart-content']/a")).click();
+    }
 
-        String productNameActual = driver.findElement(By.xpath("//div[@class = 'product-line-info']/a")).getText();
-        String productPriceActual = driver.findElement(By.className("product-price")).getText();
-        int quantity = parseInt(driver.findElement(By.className("js-cart-line-product-quantity")).getAttribute("value"));
+    private WebElement findRandomProduct() {
+        List<WebElement> products = driver.findElements(By.xpath("//div[@class = 'product-description']"));
+        return products.get(new Random().nextInt(products.size()));
+    }
 
-        assertEquals(1, quantity);
-        assertEquals(productNameExpected, productNameActual);
-        assertEquals(productPriceExpected, productPriceActual);
+    private void openProductsPage() {
+        driver.findElement(By.className("all-product-link")).click();
+        waitForElement(driver, By.tagName("h1"));
     }
 
     private WebElement waitForElement(WebDriver driver, By by) {
