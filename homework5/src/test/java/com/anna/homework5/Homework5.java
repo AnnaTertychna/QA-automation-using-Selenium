@@ -4,6 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -14,20 +15,24 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.*;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Random;
 
 import static java.lang.Integer.parseInt;
+import static java.util.Collections.singletonMap;
 import static java.util.UUID.randomUUID;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertTrue;
 
 public class Homework5 {
+    public static final String URL = "http://prestashop-automation.qatestlab.com.ua/";
     private WebDriver driver;
 
     @BeforeMethod
     @Parameters({ "browser" })
-    public void setUp(String browser) {
+    public void setUp(String browser) throws MalformedURLException {
         driver = getWebDriver(browser);
     }
 
@@ -37,8 +42,26 @@ public class Homework5 {
     }
 
     @Test
+    public void testAMobile() {
+        driver.get(URL);
+
+        List<WebElement> elements = driver.findElements(By.className("mobile"));
+
+        assertTrue(elements.size() > 0);
+    }
+
+    @Test
+    public void testADesktop() {
+        driver.get(URL);
+
+        List<WebElement> elements = driver.findElements(By.className("slide"));
+
+        assertTrue(elements.size() > 0);
+    }
+
+    @Test
     public void testB() {
-        driver.get("http://prestashop-automation.qatestlab.com.ua/");
+        driver.get(URL);
 
         openProductsPage();
 
@@ -101,17 +124,12 @@ public class Homework5 {
         int quantity = parseInt(driver.findElement(By.className("js-cart-line-product-quantity")).getAttribute("value"));
 
         assertEquals(1, quantity);
-        assertEquals(productNameExpected, productNameActual);
+        assertEquals(productNameExpected.toLowerCase(), productNameActual.toLowerCase());
         assertEquals(productPriceExpected, productPriceActual);
     }
 
     private void addToCart(WebElement product) {
-        new Actions(driver).moveToElement(product).perform();
-        WebElement quickView = waitForElement(driver, product.findElement(By.xpath("..//a[@class = 'quick-view']")));
-        new Actions(driver).moveToElement(quickView).perform();
-        //new Actions(driver).moveToElement(quickView).perform();
-        //new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(quickView));
-        quickView.click();
+        product.findElement(By.xpath(".//a")).click();
         waitForElement(By.className("add-to-cart")).click();
         waitForElement(By.xpath("//div[@class = 'cart-content']/a")).click();
     }
@@ -123,7 +141,7 @@ public class Homework5 {
 
     private void openProductsPage() {
         driver.findElement(By.className("all-product-link")).click();
-        waitForElement(By.tagName("h1"));
+        waitForElement(By.xpath("//div[@class = 'product-description']"));
     }
 
     private WebElement waitForElement(By by) {
@@ -134,17 +152,30 @@ public class Homework5 {
         return new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOf(webElement));
     }
 
-    private WebDriver getWebDriver(String browser) {
+    private WebDriver getWebDriver(String browser) throws MalformedURLException {
         RemoteWebDriver browserDriver = null;
-        if (browser.toLowerCase().contains("chrome")) {
-            System.setProperty("webdriver.chrome.driver", getDriverPath("chromedriver-2.35.exe"));
-            browserDriver = new ChromeDriver();
-        } else if (browser.toLowerCase().contains("firefox")) {
-            System.setProperty("webdriver.gecko.driver", getDriverPath("geckodriver-0.20.0.exe"));
-            browserDriver = new FirefoxDriver();
-        } else if (browser.toLowerCase().contains("explorer")) {
-            System.setProperty("webdriver.ie.driver", getDriverPath("IEDriverServer-3.8.exe"));
-            browserDriver = new InternetExplorerDriver();
+        switch (browser) {
+            case "chrome":
+                System.setProperty("webdriver.chrome.driver", getDriverPath("chromedriver-2.35.exe"));
+                browserDriver = new ChromeDriver();
+                break;
+            case "firefox":
+                System.setProperty("webdriver.gecko.driver", getDriverPath("geckodriver-0.20.0.exe"));
+                browserDriver = new FirefoxDriver();
+                break;
+            case "explorer":
+                System.setProperty("webdriver.ie.driver", getDriverPath("IEDriverServer-3.8.exe"));
+                browserDriver = new InternetExplorerDriver();
+                break;
+            case "remote-chrome":
+                browserDriver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), new ChromeOptions());
+                break;
+            case "chrome-galaxys5":
+                System.setProperty("webdriver.chrome.driver", getDriverPath("chromedriver-2.35.exe"));
+                ChromeOptions options = new ChromeOptions();
+                options.setExperimentalOption("mobileEmulation", singletonMap("deviceName", "Galaxy S5"));
+                browserDriver = new ChromeDriver(options);
+                break;
         }
         if (browserDriver != null) {
             EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(browserDriver);
