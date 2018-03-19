@@ -7,7 +7,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -27,7 +26,7 @@ import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertTrue;
 
 public class Homework5 {
-    public static final String URL = "http://prestashop-automation.qatestlab.com.ua/";
+    private static final String URL = "http://prestashop-automation.qatestlab.com.ua/";
     private WebDriver driver;
 
     @BeforeMethod
@@ -146,10 +145,6 @@ public class Homework5 {
 
     private WebElement waitForElement(By by) {
         return new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOfElementLocated(by));
-    }
-
-    private WebElement waitForElement(WebDriver driver, WebElement webElement) {
-        return new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOf(webElement));
     }
 
     private WebDriver getWebDriver(String browser) throws MalformedURLException {
