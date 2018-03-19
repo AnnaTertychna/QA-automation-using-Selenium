@@ -37,31 +37,35 @@ public class Homework5 {
     }
 
     @Test
-    public void testB() throws InterruptedException {
-        try {
-            driver.get("http://prestashop-automation.qatestlab.com.ua/");
+    public void testB() {
+        driver.get("http://prestashop-automation.qatestlab.com.ua/");
 
-            openProductsPage();
+        openProductsPage();
 
-            WebElement product = findRandomProduct();
+        WebElement product = findRandomProduct();
 
-            String productPriceExpected = product.findElement(
-                    By.xpath(".//div[@class = 'product-price-and-shipping']/span[@class = 'price']")).getText();
-            String productNameExpected = product.findElement(By.xpath(".//a")).getText();
+        String productPriceExpected = product.findElement(
+                By.xpath(".//div[@class = 'product-price-and-shipping']/span[@class = 'price']")).getText();
+        String productNameExpected = product.findElement(By.xpath(".//a")).getText();
 
-            addToCart(product);
-            assertCart(productPriceExpected, productNameExpected);
-            fillName();
-            fillAddress();
-            fillDelivery();
-            fillPayment();
+        addToCart(product);
+        assertCart(productPriceExpected, productNameExpected);
+        fillName();
+        fillAddress();
+        fillDelivery();
+        fillPayment();
+        assertOrder(productPriceExpected, productNameExpected);
+    }
 
-            WebElement h3 = waitForElement(By.tagName("h3"));
-            assertTrue(h3.getText().contains("ВАШ ЗАКАЗ ПОДТВЕРЖДЁН"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //Thread.sleep(300000);
+    private void assertOrder(String productPriceExpected, String productNameExpected) {
+        WebElement h3 = waitForElement(By.tagName("h3"));
+        assertTrue(h3.getText().contains("ВАШ ЗАКАЗ ПОДТВЕРЖДЁН"));
+        int quantity = parseInt(driver.findElement(By.className("col-xs-2")).getText());
+        assertEquals(1, quantity);
+        String productName = driver.findElement(By.xpath("//div[contains(@class, 'details')]")).getText();
+        assertTrue(productName.contains(productNameExpected));
+        String productPrice = driver.findElement(By.xpath("//div[contains(@class, 'col-xs-5')]")).getText();
+        assertEquals(productPriceExpected, productPrice);
     }
 
     private void fillPayment() {
@@ -105,7 +109,7 @@ public class Homework5 {
         new Actions(driver).moveToElement(product).perform();
         WebElement quickView = waitForElement(driver, product.findElement(By.xpath("..//a[@class = 'quick-view']")));
         new Actions(driver).moveToElement(quickView).perform();
-        new Actions(driver).moveToElement(quickView).perform();
+        //new Actions(driver).moveToElement(quickView).perform();
         //new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(quickView));
         quickView.click();
         waitForElement(By.className("add-to-cart")).click();
