@@ -1,6 +1,18 @@
 <suite name="Homework4">
-    <test name="Homework4">
+    <test name="Homework4 [Chrome]">
         <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.anna.homework4.Homework4" />
+        </classes>
+    </test>
+    <test name="Homework4 [Firefox]">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.anna.homework4.Homework4" />
+        </classes>
+    </test>
+    <test name="Homework4 [Explorer]">
+        <parameter name="browser" value="explorer"/>
         <classes>
             <class name="com.anna.homework4.Homework4" />
         </classes>
